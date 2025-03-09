@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1451fb421ae3f6344a71ad47e97d9684, type: 3}
+  m_Name: WordData
+  m_EditorClassIdentifier: 
+  wordData:
+  - level: 1
+    word: int a = 10;
+  - level: 1
+    word: void main();
+  - level: 1
+    word: char x = 'b';
+  - level: 1
+    word: int sum = 0;
+  - level: 1
+    word: bool isOver;
+  - level: 1
+    word: int max = 100;
+  - level: 1
+    word: void run();
+  - level: 1
+    word: int count = 1;
+  - level: 1
+    word: bool is_ok;
+  - level: 1
+    word: float pi = 3;
+  - level: 2
+    word: if (x > y) return;
+  - level: 2
+    word: for (int i = 0; i < n; i++);
+  - level: 2
+    word: string name = "code";
+  - level: 2
+    word: while (a < max_value);
+  - level: 2
+    word: int list[] = {1, 2, 3};
+  - level: 2
+    word: vector<int> nums(5);
+  - level: 2
+    word: cout << x << endl;
+  - level: 2
+    word: switch (value) {};
+  - level: 2
+    word: do { x++; } while (x < 10);
+  - level: 2
+    word: pair<int, int> p1;
+  - level: 3
+    word: map<string, int> word_count;
+  - level: 3
+    word: vector<string>::iterator iter;
+  - level: 3
+    word: template<class T> T max(T a, T b);
+  - level: 3
+    word: typedef unsigned long long ull;
+  - level: 3
+    word: const string& get_name() const;
+  - level: 3
+    word: virtual void update() override;
+  - level: 3
+    word: namespace test_space {};
+  - level: 3
+    word: queue<pair<int, int>> coord_q;
+  - level: 3
+    word: static_cast<float>(some_int);
+  - level: 3
+    word: shared_ptr<MyClass> ptr;
+  - level: 4
+    word: template<typename T, typename U = void>
+  - level: 4
+    word: std::function<void(int&&)> callback;
+  - level: 4
+    word: typename vector<T>::const_iterator it;
+  - level: 4
+    word: static_assert(is_integral_v<T>, "Error");
+  - level: 4
+    word: '#define CONCATENATE(x, y) x##_##y '
+  - level: 4
+    word: 'mutex mtx; lock_guard<mutex> lock(mtx); '
+  - level: 4
+    word: 'tuple<string, vector<int>, bool> data; '
+  - level: 4
+    word: 'array<array<int, 3>, 3> matrix; '
+  - level: 4
+    word: 'enable_if_t<is_arithmetic<T>::value, T>; '
+  - level: 4
+    word: 'unordered_map<string, function<void()>>;  '

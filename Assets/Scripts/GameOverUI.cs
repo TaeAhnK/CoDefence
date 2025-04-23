@@ -42,7 +42,7 @@ public class GameOverUI : MonoBehaviour
 
     public void OnRestartButtonClicked()
     {
-        SoundEvent.PlaySound(SoundType.GameEnd);
+        SoundEvent.StopSound(SoundType.GameEnd);
         BGMEvent.StopBGM(BGMList.MainTheme);
         SceneManager.LoadScene("MainMenu");
     }

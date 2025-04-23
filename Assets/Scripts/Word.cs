@@ -1,76 +1,42 @@
-using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 
+[Serializable]
 public class Word : MonoBehaviour
 {
     [field: SerializeField] public string text { get; private set; }
     [field: SerializeField] public int damage { get; private set; }
     [field: SerializeField] public int level { get; private set; }
     [field: SerializeField] public float duration { get; private set; }
-    [field: SerializeField] public float moveDistance { get; private set; } = 50f;
-    [field: SerializeField] public RectTransform terminal;
+    [field: SerializeField] public float moveDistance { get; private set; }
+    [field: SerializeField] public int exp { get; private set; }
 
-    public TextMeshProUGUI tmpro;
+    [field: SerializeField] public TextMeshProUGUI tmpro;
+    [field: SerializeField] public RectTransform rectT;
 
     private RectTransform rectTransform;
-
+        
     private float timer = 0f;
-    private Vector3[] corners = new Vector3[4];
     private float terminalEndY;
-
-    #region private Dictionary<string, string> keywordColors;
-    private static readonly Dictionary<string, string> keywordColors = new Dictionary<string, string>
+    
+    private void OnEnable()
     {
-        {"int", "<color=#569CD6>"},
-        {"void", "<color=#569CD6>"},
-        {"char", "<color=#569CD6>"},
-        {"bool", "<color=#569CD6>"},
-        {"float", "<color=#569CD6>"},
-        {"unsigned", "<color=#569CD6>"},
-        {"long", "<color=#569CD6>"},
-        {"typename", "<color=#569CD6>"},
-        {"typedef", "<color=#569CD6>"},
-        {"class", "<color=#569CD6>"},
-        {"template", "<color=#569CD6>"},
-        {"const", "<color=#569CD6>"},
-        {"string", "<color=#569CD6>"},
-        {"virtual", "<color=#569CD6>"},
-        {"override", "<color=#569CD6>"},
+        GameEvent.OnGameOver += OnGameOver;
+    }
 
-        {"enable_if_t", "<color=#569CD6>"},
-        {"unordered_map", "<color=#569CD6>"},
-        {"vector", "<color=#569CD6>"},
-        {"pair", "<color=#569CD6>"},
-        {"map", "<color=#569CD6>"},
-        {"queue", "<color=#569CD6>"},
-        {"array", "<color=#569CD6>"},
-        {"tuple", "<color=#569CD6>"},
-        {"mutex", "<color=#569CD6>"},
-
-        {"if", "<color=#C586C0>"},
-        {"for", "<color=#C586C0>"},
-        {"while", "<color=#C586C0>"},
-        {"switch", "<color=#C586C0>"},
-        {"do", "<color=#C586C0>"},
-        {"return", "<color=#C586C0>"},
-
-        {"namespace", "<color=#569CD6>"},
-        {"static_cast", "<color=#569CD6>"},
-        {"static_assert", "<color=#569CD6>"},
-    };
-    #endregion
-
-    void Update()
+    private void OnDisable()
     {
-        if (GameManager.Instance.IsGameOver) return;
+        GameEvent.OnGameOver -= OnGameOver;
+    }
 
+    private void Update()
+    {
         Move();
 
         if (IsOffScreen())
         {
-            GameManager.Instance.player.Damage(damage);
-            GameManager.Instance.spawner.DestroyWord(text);
+            GameEvent.RaiseOnWordAttack(this);
         }
     }
 
@@ -89,66 +55,29 @@ public class Word : MonoBehaviour
 
     private bool IsOffScreen()
     {
-        rectTransform.GetWorldCorners(corners);
-        return corners[0].y < terminalEndY;
+        return rectT.anchoredPosition.y < terminalEndY;
     }
 
-    private string SyntaxHighlight(string text)
+    public void Init(string text, int level, int damage, int duration, int moveDistance, int exp)
     {
-        string result = text;
-        foreach (var keyword in keywordColors)
-        {
-            result = result.Replace(
-                keyword.Key,
-                $"{keyword.Value}{keyword.Key}</color>"
-            );
-        }
-        return result;
+        this.text = string.Intern(text);
+        this.level = level;
+        this.damage = damage;
+        this.duration = duration;
+        this.moveDistance = moveDistance;
+        this.exp = exp;
+        
+        rectT.sizeDelta = new Vector2(text.Length * 13.34f, rectT.sizeDelta.y);
+
+        tmpro.text = SyntaxHighlighter.Highlight(text);
     }
-
-    public void Init(string text, int level, RectTransform terminal)
+    public void SetPopY(float y)
     {
-        this.text = text;
-        this.level = Mathf.Clamp(level, 0, WordData.MAXLEVEL);
-        this.terminal = terminal;
-
-        rectTransform = GetComponent<RectTransform>();
-
-        Vector3[] terminalCorners = new Vector3[4];
-        terminal.GetWorldCorners(terminalCorners);
-        terminalEndY = terminalCorners[0].y;
-
-        switch (level)
-        {
-            case 1:
-                damage = 5;
-                duration = 2f;
-                moveDistance = 50f;
-                break;
-            case 2:
-                damage = 10;
-                duration = 2f;
-                moveDistance = 50f;
-                break;
-            case 3:
-                damage = 15;
-                duration = 3f;
-                moveDistance = 50f;
-                break;
-            case 4:
-                damage = 25;
-                duration = 3f;
-                moveDistance = 50f;
-                break;
-            case 5:
-                damage = 30;
-                duration = 3f;
-                moveDistance = 50f;
-                break;
-            default:
-                break;
-        }
-
-        tmpro.text = SyntaxHighlight(text);
+        terminalEndY = y;
+    }
+    
+    private void OnGameOver()
+    {
+        gameObject.SetActive(false);
     }
 }

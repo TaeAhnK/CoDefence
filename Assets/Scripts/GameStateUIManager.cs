@@ -1,55 +1,70 @@
+using System;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameStateUIManager : MonoBehaviour
+public class GameStateUIManager : Singleton<GameStateUIManager>
 {
-    #region Singleton
-    private static GameStateUIManager instance;
-    public static GameStateUIManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindAnyObjectByType<GameStateUIManager>();
-                if (instance == null)
-                {
-                    var go = new GameObject(typeof(GameStateUIManager).Name + " Auto-generated");
-                    instance = go.AddComponent<GameStateUIManager>();
-                }   
-            }
-            return instance;
-        }
-    }
-    #endregion
     public TextMeshProUGUI level;
     public TextMeshProUGUI progress;
     public Slider slider;
-    private Player player;
+    [field: SerializeField] private Player player;
 
-    private void Awake()
+    private int cachedLevel = -1;
+    private int cachedHackPercent = -1;
+    private StringBuilder progressSB = new StringBuilder();
+    
+    private void OnEnable()
     {
-        // Singleton
-        if (instance != null && instance != this)
+        UIEvent.OnGameStatUIUpdate += UpdateUI;
+    }
 
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            instance = this;
-        }
-        instance = this;
+    private void OnDisable()
+    {
+        UIEvent.OnGameStatUIUpdate -= UpdateUI;
+    }
 
-        player = GameManager.Instance.player;
+    private void Start()
+    {
+        UpdateUI();
     }
 
     public void UpdateUI()
     {
-        level.text = player.PlayerLevel.ToString();
-        progress.text = "Attacking... " + Mathf.Clamp(player.HackPercent, 0, 100).ToString() + "% done";
-        slider.value = player.HackPercent;
+        UpdateLevel();
+        UpdateProgress();
+        UpdateSlider();
     }
 
+    private void UpdateLevel()
+    {
+        int currentLevel = player.PlayerLevel;
+        if (currentLevel == cachedLevel) return;
+        else
+        {
+            level.text = currentLevel.ToString();
+            cachedLevel = currentLevel;
+        }
+    }
+
+    private void UpdateProgress()
+    {
+        int currentPercent = Mathf.Clamp(player.HackPercent, 0, 100);
+        if  (currentPercent == cachedHackPercent) return;
+        
+        progressSB.Clear();
+        progressSB.Append("Attacking... ");
+        progressSB.Append(currentPercent);
+        progressSB.Append("% done");
+
+        progress.text = progressSB.ToString();
+        
+        cachedHackPercent = currentPercent;
+    }
+
+    private void UpdateSlider()
+    {
+        slider.value = player.HackPercent;
+    }
 }

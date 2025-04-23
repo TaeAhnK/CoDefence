@@ -1,42 +1,40 @@
 using UnityEngine;
+using System;
 
 public enum BGMList
 {
     MainTheme
 }
 
-public class BGMManager : MonoBehaviour
+public static class BGMEvent
 {
-    private static BGMManager instance;
-    public static BGMManager Instance
+    public static event Action<BGMList> OnBGMPlayEvent;
+    public static event Action<BGMList> OnBGMStopEvent;
+    public static void PlayBGM(BGMList bgm)
     {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindAnyObjectByType<BGMManager>();
-                if (instance == null)
-                {
-                    var go = new GameObject(typeof(BGMManager).Name + " Auto-generated");
-                    instance = go.AddComponent<BGMManager>();
-                }
-            }
-            return instance;
-        }
+        OnBGMPlayEvent?.Invoke(bgm);
     }
 
+    public static void StopBGM(BGMList bgm)
+    {
+        OnBGMStopEvent?.Invoke(bgm);
+    }
+}
+
+public class BGMManager : Singleton<BGMManager>
+{
     [SerializeField] private AudioSource mainTheme;
 
-    private void Awake()
+    private void OnEnable()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            instance = this;
-        }
+        BGMEvent.OnBGMPlayEvent += PlayBGM;
+        BGMEvent.OnBGMStopEvent += StopBGM;
+    }
+
+    private void OnDisable()
+    {
+        BGMEvent.OnBGMPlayEvent -= PlayBGM;
+        BGMEvent.OnBGMStopEvent -= StopBGM;
     }
 
     private void Start()
@@ -47,7 +45,7 @@ public class BGMManager : MonoBehaviour
         }
     }
 
-    public void PlayBGM(BGMList bgm)
+    private void PlayBGM(BGMList bgm)
     {
         switch (bgm)
         {
@@ -59,7 +57,7 @@ public class BGMManager : MonoBehaviour
         }
     }
 
-    public void StopBGM(BGMList bgm)
+    private void StopBGM(BGMList bgm)
     {
         switch (bgm)
         {
@@ -70,5 +68,4 @@ public class BGMManager : MonoBehaviour
                 break;
         }
     }
-
 }

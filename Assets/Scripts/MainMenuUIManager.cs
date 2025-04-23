@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MainMenuUIManager : MonoBehaviour
+public class MainMenuUIManager : Singleton<MainMenuUIManager>
 {
     #region const string mainmenustring;
     const string mainmenustring = "Welcome to Mebuntu 24.11.14 LTS (Cinux 2.38 x86_64)\r\n\r\n " +
@@ -15,14 +15,15 @@ public class MainMenuUIManager : MonoBehaviour
     TypingEffect typingeffect;
     [SerializeField] private TMP_InputField inputField;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         typingeffect = GetComponent<TypingEffect>();
     }
 
     void Start()
     {
-        SoundManager.Instance.PlaySound(SoundType.Start);
+        SoundEvent.PlaySound(SoundType.Start);
         typingeffect.Typing(mainmenustring);
         inputField.text = "";
         inputField.ActivateInputField();
@@ -32,7 +33,7 @@ public class MainMenuUIManager : MonoBehaviour
     {
         if (inputField.text == "run viruskiller3")
         {
-            SoundManager.Instance.PlaySound(SoundType.Login);
+            SoundEvent.PlaySound(SoundType.Login);
             SceneManager.LoadScene("GameScene");
         }
         inputField.text = "";
@@ -41,6 +42,6 @@ public class MainMenuUIManager : MonoBehaviour
 
     public void OnTyping()
     {
-        SoundManager.Instance.PlaySound(SoundType.Typing);
+        SoundEvent.PlaySound(SoundType.Typing);
     }
 }

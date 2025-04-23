@@ -1,17 +1,9 @@
 using System;
-using System.Collections.Generic;
+using AYellowpaper.SerializedCollections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New WordData", menuName = "WordData")]
 public class WordData : ScriptableObject
 {
-    public const int MAXLEVEL = 4;
-    public List<WordDataSlot> wordData = new List<WordDataSlot>();
-}
-
-[Serializable]
-public class WordDataSlot
-{
-    public int level;
-    public string word;
+    public SerializedDictionary<String, int> wordData = new  SerializedDictionary<String, int>();
 }

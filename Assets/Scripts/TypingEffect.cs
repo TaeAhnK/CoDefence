@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -14,11 +15,13 @@ public class TypingEffect : MonoBehaviour
 
     private IEnumerator TypingEnumerator(string text)
     {
+        StringBuilder sb = new StringBuilder();
         this.text.text = string.Empty;
 
         for (int i = 0; i < text.Length; i++)
         {
-            this.text.text += text[i];
+            sb.Append(text[i]);
+            this.text.text = sb.ToString();
             yield return new WaitForSeconds(typingSpeed);
         }
     }

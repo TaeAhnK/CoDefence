@@ -1,16 +1,26 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    public int HackPercent = 0;
-    public int PlayerLevel = 1;
-    public int PlayerExp = 0;
-
+    public int HackPercent { get; private set; } = 0;
+    public int PlayerLevel { get; private set; } = 1;
+    public int PlayerExp { get; private set; } = 0;
+    
     public TMP_InputField inputField;
-    public Slider hackBar;
 
+    private void OnEnable()
+    {
+        GameEvent.OnWordDestroyed += AddExp;
+        GameEvent.OnWordAttack += OnWordAttack;
+    }
+
+    private void OnDisable()
+    {
+        GameEvent.OnWordDestroyed -= AddExp;
+        GameEvent.OnWordAttack -= OnWordAttack;
+    }
+    
     private void Start()
     {
         HackPercent = 0;
@@ -23,34 +33,43 @@ public class Player : MonoBehaviour
         return HackPercent >= 100;
     }
 
-    public void Damage(int damage)
+    public void OnWordAttack(Word word)
+    {
+        Damage(word.damage);
+    }
+
+    private void Damage(int damage)
     {
         HackPercent += damage;
-        SoundManager.Instance.PlaySound(SoundType.Crash);
-        GameStateUIManager.Instance.UpdateUI();
+        SoundEvent.PlaySound(SoundType.Crash);
+        
+        UIEvent.RaiseOnGameStatUIUpdate();
+
+        if (IsHacked())
+        {
+            GameEvent.RaiseOnHacked();
+        }
     }
 
     public void OnWordEnter()
     {
-        if (GameManager.Instance.spawner.spawned.ContainsKey(inputField.text))
-        {
-            AddExp(10);
-            GameManager.Instance.spawner.DestroyWord(inputField.text);
-            SoundManager.Instance.PlaySound(SoundType.Pop);
-            GameStateUIManager.Instance.UpdateUI();
-        }
-        else if (inputField.text == "quit")
+        if (inputField.text == "quit")
         {
             Damage(100);
-            GameStateUIManager.Instance.UpdateUI();
         }
+        else
+        {
+            GameEvent.RaiseOnWordInput(inputField.text);
+        }
+        
+        UIEvent.RaiseOnGameStatUIUpdate();
         inputField.text = "";
         inputField.ActivateInputField();
     }
 
     public void OnTyping()
     {
-        SoundManager.Instance.PlaySound(SoundType.Typing);
+        SoundEvent.PlaySound(SoundType.Typing);
     }
 
     private void AddExp(int exp)
@@ -60,7 +79,8 @@ public class Player : MonoBehaviour
         {
             PlayerExp = 0;
             PlayerLevel++;
+            GameEvent.RaiseOnLevelChanged(PlayerLevel);
         }
-        GameStateUIManager.Instance.UpdateUI();
+        UIEvent.RaiseOnGameStatUIUpdate();
     }
 }

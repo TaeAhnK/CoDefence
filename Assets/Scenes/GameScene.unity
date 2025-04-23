@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 61195691}
   - component: {fileID: 61195690}
   - component: {fileID: 61195689}
+  - component: {fileID: 61195692}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -168,11 +169,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b67fab8f163605948a8787f8011db665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 1426351091793616169, guid: c6740f34b7fe15741944951e5362a5b7, type: 3}
-  wordData: {fileID: 11400000, guid: f8024e9240f05ba41b3a30031fb653b4, type: 2}
+  wordPool: {fileID: 61195692}
+  terminal: {fileID: 1005486009}
   duration: 3
-  <terminal>k__BackingField: {fileID: 1005486009}
-  canvas: {fileID: 128147935}
 --- !u!114 &61195690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,11 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b59d09895b849e4c8f20db2f891cda1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HackPercent: 0
-  PlayerLevel: 1
-  PlayerExp: 0
   inputField: {fileID: 385643925}
-  hackBar: {fileID: 1297524994}
 --- !u!114 &61195691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,6 +201,22 @@ MonoBehaviour:
   spawner: {fileID: 61195689}
   IsGameOver: 0
   GameOverUI: {fileID: 1192852072}
+--- !u!114 &61195692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 61195687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 679f65288e90446ebf239578534d23b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  terminal: {fileID: 1005486009}
+  levelConfig: {fileID: 11400000, guid: e11fc67d382e3494586db581718d8ab3, type: 2}
+  wordData: {fileID: 11400000, guid: ccf1bc8f301298b4798f433d180cfbcd, type: 2}
+  wordPrefab: {fileID: 6631032495915095472, guid: cf68aed9b30cd554eb089338b08044c3, type: 3}
 --- !u!1 &128147932
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,7 +1259,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: bc0102e34d07d604881dd173cf17f18f, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.2
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -1399,6 +1410,7 @@ MonoBehaviour:
   level: {fileID: 1743504352}
   progress: {fileID: 1536466435}
   slider: {fileID: 1297524994}
+  player: {fileID: 61195690}
 --- !u!1 &900589321
 GameObject:
   m_ObjectHideFlags: 0

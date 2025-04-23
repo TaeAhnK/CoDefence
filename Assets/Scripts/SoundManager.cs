@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public enum SoundType
 {
@@ -10,50 +11,49 @@ public enum SoundType
     GameEnd
 }
 
-
-public class SoundManager : MonoBehaviour
+public static class SoundEvent
 {
-    #region Singleton
-    private static SoundManager instance;
-    public static SoundManager Instance
+    public static event Action<SoundType> OnSoundPlayEvent;
+    public static event Action<SoundType> OnSoundStopEvent;
+    
+    public static void PlaySound(SoundType soundType)
     {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindAnyObjectByType<SoundManager>();
-                if (instance == null)
-                {
-                    var go = new GameObject(typeof(SoundManager).Name + " Auto-generated");
-                    instance = go.AddComponent<SoundManager>();
-                }
-            }
-            return instance;
-        }
+        OnSoundPlayEvent?.Invoke(soundType);
     }
 
-    #endregion
+    public static void StopSound(SoundType soundType)
+    {
+        OnSoundStopEvent?.Invoke(soundType);
+    }
+}
 
+public class SoundManager : Singleton<SoundManager>
+{
     [SerializeField] private AudioSource typingSound;
     [SerializeField] private AudioSource popSound;
     [SerializeField] private AudioSource crashSound;
     [SerializeField] private AudioSource loginSound;
     [SerializeField] private AudioSource startSound;
     [SerializeField] private AudioSource gameEndSound;
-    private void Awake()
+
+    protected override void Awake()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        instance = this;
+        base.Awake();
+        DontDestroyOnLoad(gameObject);
     }
 
+    private void OnEnable()
+    {
+        SoundEvent.OnSoundPlayEvent += PlaySound;
+        SoundEvent.OnSoundStopEvent += StopSound;
+    }
+
+    private void OnDisable()
+    {
+        SoundEvent.OnSoundPlayEvent -= PlaySound;
+        SoundEvent.OnSoundStopEvent -= StopSound;
+    }
+    
     public void PlaySound(SoundType sound)
     {
         switch (sound)
@@ -107,5 +107,4 @@ public class SoundManager : MonoBehaviour
                 break;
         }
     }
-
 }

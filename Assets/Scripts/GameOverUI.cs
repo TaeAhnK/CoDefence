@@ -35,15 +35,15 @@ public class GameOverUI : MonoBehaviour
     private void OnEnable()
     {
         enabled = true;
-        SoundManager.Instance.PlaySound(SoundType.GameEnd);
+        SoundEvent.PlaySound(SoundType.GameEnd);
         typingeffect.Typing(backgroundstring);
         panelBlinkEffect.Blink();
     }
 
     public void OnRestartButtonClicked()
     {
-        SoundManager.Instance.StopSound(SoundType.GameEnd);
-        BGMManager.Instance.StopBGM(BGMList.MainTheme);
+        SoundEvent.PlaySound(SoundType.GameEnd);
+        BGMEvent.StopBGM(BGMList.MainTheme);
         SceneManager.LoadScene("MainMenu");
     }
 }

@@ -1,36 +1,32 @@
-using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class WordSpawner : MonoBehaviour
 {
-    [field: SerializeField] GameObject prefab;
-    [field: SerializeField] WordData wordData;
-    private static readonly Dictionary<int, List<WordDataSlot>> words = new();
-    public Dictionary<string, GameObject> spawned { get; private set; } = new Dictionary<string, GameObject>();
+    [field :SerializeField] private WordPool wordPool;
+    [field: SerializeField] private RectTransform terminal;
 
-    private float timer;
+    private float timer = 0f;
     public float duration;
 
-    private Player player;
-    [field : SerializeField] public RectTransform terminal { get; private set; }
-    [field: SerializeField] public Canvas canvas;
-
     private float StartY;
+    private float EndY;
     private float MinX;
     private float MaxX;
 
+    private void OnEnable()
+    {
+        GameEvent.OnGameOver += OnGameOver;
+    }
+
+    private void OnDisable()
+    {
+        GameEvent.OnGameOver -= OnGameOver;
+    }
+
     private void Awake()
     {
-        player = GameManager.Instance.player;
-
-        Vector3[] terminalCorners = new Vector3[4];
-        terminal.GetWorldCorners(terminalCorners);
-        
-        StartY = terminalCorners[1].y - 70f;
-        MinX = terminalCorners[1].x + prefab.GetComponent<RectTransform>().rect.width / 2 + 20f;
-        MaxX = terminalCorners[2].x - prefab.GetComponent<RectTransform>().rect.width / 2 - 20f;
-       
-        LoadWordData();
+        GetRange();
     }
 
     private void Start()
@@ -41,58 +37,42 @@ public class WordSpawner : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance.IsGameOver) return;
-
         timer += Time.deltaTime;
 
         if (timer >= duration)
         {
-            timer = 0;
+            timer = 0f;
             SpawnWord();
         }
     }
 
-    private void LoadWordData()
+    private void GetRange()
     {
-        for (int i = 1; i <= WordData.MAXLEVEL; i++)
-        {
-            words.Add(i, new List<WordDataSlot>());
-        }
-
-        foreach (var worddata in wordData.wordData)
-        {   
-            words[worddata.level].Add(worddata);
-        }
+        MinX = 40f;
+        MaxX = terminal.rect.width - 40f;
+        StartY = -40f;
+        EndY = -terminal.rect.height + 90f;
     }
-
+    
     private void SpawnWord()
     {
-        int level = Mathf.Clamp(Random.Range(1, player.PlayerLevel), 1, 5);
-        WordDataSlot wordinfo = words[level][Random.Range(0, words[level].Count)];
-        if (spawned.ContainsKey(wordinfo.word))
-        {
-            return;
-        }
+        Word word = wordPool.GetWord();
+
+        if (!word) return;
         
-
-        GameObject word = Instantiate(prefab);
-        word.transform.SetParent(canvas.transform, false);
-
-        word.GetComponent<Word>().Init(wordinfo.word, wordinfo.level, terminal);
-
-        word.transform.position = GetSpawnPosition(word);
-
-        spawned.Add(wordinfo.word, word);
+        word.SetPopY(EndY);
+        word.gameObject.SetActive(true);
+        word.rectT.anchoredPosition = GetSpawnPosition(word);
     }
 
-    private Vector3 GetSpawnPosition(GameObject prefab)
+    private Vector3 GetSpawnPosition(Word word)
     {
-        return new Vector3(Random.Range(MinX, MaxX), StartY, 0f);   
+        float endX = MaxX - word.rectT.sizeDelta.x;
+        return new Vector3(Random.Range(MinX, endX), StartY, 0f);
     }
-
-    public void DestroyWord(string word)
+    
+    private void OnGameOver()
     {
-        Destroy(spawned[word]);
-        spawned.Remove(word);
+        enabled = false;
     }
 }

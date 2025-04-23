@@ -4,6 +4,7 @@
 ## 데모
 - [플레이 영상](https://youtu.be/d_d7eyaYCBs)
 - [웹 버전 바로가기](https://taeahnk.github.io/CoDefence/)
+- [Windows Release](https://github.com/TaeAhnK/CoDefence/releases/tag/v1.1.1)
 
 ## 소개
 - 2024.11.14 ~ 2024.11.15 (1일, 이후 추가 리펙토링 진행)
